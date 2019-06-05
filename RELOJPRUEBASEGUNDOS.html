@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<title>PAINT CANVAS</title>
+<meta charset=utf-8>
+
+<script src="java/sweetalert.min.js"></script>
+<link rel="stylesheet" type="text/css" href="java/sweetalert.css">
+<style type="text/css">
+
+#zona { border: 1px solid black;}
+</style>
+<script>
+//los mensajes emergentes están sacados de http://develoteca.com/sweetalert-alertas-personalizadas-con-interfaz-profesional/
+/*
+=====================================
+ V A R I A B L E S   G L O B A L E S
+=====================================
+*/
+var lienzo; 				//elemento "lienzo" del canvas
+var ctx;					//contexto "2d" del elemento "lienzo"
+var anchoLienzo=1200;		//ancho del lienzo
+var altoLienzo=600;			//alto del lienzo
+
+//Medidas de la hora
+var s=0;
+var m=0;
+var h=0;
+
+//Medidas de la alarma
+var sA=0;
+var mA=0;
+var hA=0;
+
+
+//INTERVALO
+var intervalo;
+var intervaloPlus;
+var intervaloMinus;
+var intervaloPlusBola;
+var intervaloMinusBola;
+//BOLITA
+var b=90;
+
+
+
+//PARPADEO
+
+var p;
+
+//BOOLEAN
+var pulsadoStop=false;
+var pulsadoSuma=false;
+var pulsadoResta=false;
+var pulsadoAlarma=false;
+var sueltoAlarma=true;
+var alarmaFijada=false;
+var alarmaActivada=false;
+//MOUSE
+var mouseX,mouseY;
+
+
+//CONSTANTE BOTON en el valor de X
+var xxx=150;//sumar
+var rrr=300;//restar
+
+
+//CONSTANTE BOTON en el valor de Y
+var ccc=100; //restablecer
+var ppp=200;
+/*
+===================================================================
+LANZAR EL JAVASCRIPT CUANDO SE HA TERMINADO DE LEER TODA LA PÁGINA
+===================================================================
+*/
+				window.onload = function(){
+					lienzo = document.getElementById("zona");	//asignar el canvas a la varible lienzo
+					ctx = lienzo.getContext("2d");				//determinar el contexto del canvas
+					lienzo.width=anchoLienzo;					//asignar la anchura al elemento canvas
+					lienzo.height=altoLienzo;					//asignar la altura al elemento canvas
+					intervalo=setInterval(mover,1000);
+					
+					lienzo.addEventListener('mousemove',posicion,false);
+					lienzo.addEventListener('mousedown',estaPulsado,false);
+					window.addEventListener('mouseup',noPulsado,false);
+									
+				
+				}
+				
+				function moverPlus() {
+            
+					m++;
+					
+					if (m==60){
+						h++;
+						m=0;
+					}
+					
+					if (h==24){
+						h=0;
+					}
+                                        
+					ctx.clearRect(0,0,1000,600);
+					agujaS();
+                    agujaM(m);
+					agujaH(h*30+m*0.5);
+					relojDigital();
+					relojFondo();
+					dibujarRayas();
+					botonParar();
+					botonSumar();
+					botonRestar();
+					botonRestablecer();
+					botonPut();
+					bolita(b);
+					botonAlarma();
+					
+				}
+				
+				function moverBolaPLus(){
+					
+					var mB;
+					var hB;
+					b++;
+					mA++;
+					
+					if (mA==60){
+						hA++;
+						mA=0;
+					}
+					if(hA==24){
+						hA=0;
+					}
+					
+					ctx.clearRect(0,0,1000,600);
+					agujaS();
+                    agujaM(m);
+					agujaH(h*30+m*0.5);
+					relojDigital();
+					relojFondo();
+					dibujarRayas();
+					botonParar();
+					botonSumar();
+					botonRestar();
+					botonRestablecer();
+					botonPut();
+					bolita(b);
+					botonAlarma();
+					alarmaDigital()
+				
+				}
+				
+				function moverMinus() {
+            
+					m--;
+					
+					if (m==-1){
+						h--;
+						m=59;
+					}
+					
+					if (h==-1){
+						h=23;
+					}
+                                        
+					ctx.clearRect(0,0,1000,600);
+					agujaS();
+                    agujaM(m);
+					agujaH(h*30+m*0.5);
+					relojDigital();
+					relojFondo();
+					dibujarRayas();
+					botonParar();
+					botonSumar();
+					botonRestar();
+					botonRestablecer();
+					botonPut();
+					bolita(b);
+					botonAlarma();
+					
+				}
+				
+				function moverBolaMinus(){
+					var mB;
+					var hB;
+					b--;
+					mA--;
+					
+					if (mA==-1){
+						hA--;
+						mA=59;
+					}
+					if(hA==-1){
+						hA=23;
+					}
+					                    
+					ctx.clearRect(0,0,1000,600);
+					agujaS();
+                    agujaM(m);
+					agujaH(h*30+m*0.5);
+					relojDigital();
+					relojFondo();
+					dibujarRayas();
+					botonParar();
+					botonSumar();
+					botonRestar();
+					botonRestablecer();
+					botonPut();
+					bolita(b);
+					botonAlarma();
+					alarmaDigital()
+					
+				}
+				
+				
+				function mover() {
+            
+					s++;
+					if (s==60) {
+						m++;
+						s=0;
+						
+					}
+					if (m==60){
+						h++;
+						m=0;
+					}
+					
+					if (h==24){
+						h=0;
+					}
+                                        
+					ctx.clearRect(0,0,1000,600);
+					agujaS();
+                    agujaM(m);
+					agujaH(h*30+m*0.5);
+					relojDigital();
+					relojFondo();
+					dibujarRayas();
+					botonParar();
+					botonSumar();
+					botonRestar();
+					botonRestablecer();
+					botonPut();
+					bolita(b);
+					botonAlarma();
+					
+					//ALARMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+					var alarm = h*60+m;
+					
+					
+					
+						if (b==alarm){
+							
+							alarmaActivada=true;
+							
+							
+						}
+					
+					
+					if (alarmaActivada==true){
+						botonPararAlarma()
+						if (s%2==0){
+								
+							parpadearColor();
+							
+						}else{
+						}
+						
+					}
+					
+					///////////////////////////////////////////////////////////////////////
+				
+				}
+						
+				function parpadearColor() {
+					ctx.fillStyle="rgba(255,0,0,0.7)";
+					ctx.fillRect(0,0,anchoLienzo-520,altoLienzo);
+					ctx.textAlign="center";
+					ctx.textBaseline="middle";
+					ctx.font="bolder 100px Arial";
+					ctx.fillText("ALARMA",300,300,anchoLienzo-520,altoLienzo)
+					
+					
+					ctx.fill();
+					
+				}
+								
+				function agujaS(){
+					ctx.save();
+					ctx.translate(300,300);
+					ctx.fillStyle="black";
+					ctx.rotate(6*s*Math.PI/180);
+					ctx.beginPath();
+					ctx.moveTo(-5,15);
+					ctx.quadraticCurveTo(0,-80,-10,-150);
+					ctx.quadraticCurveTo(0,-200,0,-250);
+					ctx.quadraticCurveTo(0,-200,10,-150);
+					ctx.quadraticCurveTo(0,-80,5,15);
+					ctx.quadraticCurveTo(0,0,-5,15);
+					ctx.stroke();
+					ctx.fill();
+					
+					ctx.moveTo(10,0);
+					ctx.arc(0,0,10,0,Math.PI*2);
+					ctx.fill();
+					
+				
+                                        
+					ctx.restore();
+                          
+				} 
+                                
+                function agujaM(mm){
+					ctx.save();
+					
+					ctx.translate(300,300); // POSICION DE LA AGUJA DESDE DONDE SE EMPIEZA A DIBUJAR
+					ctx.rotate(6*mm*Math.PI/180); //ROTACIÓN
+					ctx.beginPath();
+					ctx.moveTo(-5,15);
+					ctx.quadraticCurveTo(0,-80,-12,-100);
+					ctx.quadraticCurveTo(0,-130,0,-210);
+					ctx.quadraticCurveTo(0,-130,12,-100);
+					ctx.quadraticCurveTo(0,-80,5,15);
+					ctx.quadraticCurveTo(0,0,-5,15);
+					ctx.stroke();
+					ctx.fill();
+					
+					ctx.moveTo(10,0)
+					ctx.arc(0,0,10,0,Math.PI*2);
+                                        ctx.fillStyle="#FF0000";
+					ctx.fill();
+					
+					
+					ctx.restore();
+				
+				}
+				
+				function agujaH(vv){
+					ctx.save();
+					
+					ctx.translate(300,300); // POSICION DE LA AGUJA DESDE DONDE SE EMPIEZA A DIBUJAR
+					ctx.rotate(vv*Math.PI/180); //ROTACIÓN
+					ctx.beginPath();
+					ctx.moveTo(-5,15);
+					ctx.quadraticCurveTo(0,-80,-12,-100);
+					ctx.quadraticCurveTo(0,-90,0,-170);
+					ctx.quadraticCurveTo(0,-90,12,-100);
+					ctx.quadraticCurveTo(0,-80,5,15);
+					ctx.quadraticCurveTo(0,0,-5,15);
+					ctx.stroke();
+					ctx.fill();
+					
+					ctx.moveTo(10,0)
+					ctx.arc(0,0,10,0,Math.PI*2);
+                    ctx.fillStyle="yellow";
+					ctx.fill();
+					
+					
+					ctx.restore();
+				
+				}
+				
+				function bolita(bb){
+					ctx.save();
+					ctx.fillStyle="red";
+					ctx.translate(300,300);
+					ctx.rotate(0.5*bb*Math.PI/180);
+					ctx.beginPath();
+					ctx.strokeStyle="black";
+					ctx.lineWidth=2;
+					
+					
+					ctx.moveTo(0,-240);
+					ctx.arc(0,-240,10,0,2*(Math.PI));
+					ctx.closePath();
+					ctx.stroke();
+				                     
+										
+					ctx.fill();
+					ctx.restore();
+				}
+				
+				function horario(){
+					var d = new Date();
+					h = d.getHours();
+					m = d.getMinutes();
+					s = d.getSecond();
+									
+				}
+				
+				function fijarHora(){
+					
+					var horaS = "";
+					var minutoS = "";
+					var segundoS= "";
+				
+					horaS = prompt("Introduce las horas");
+					minutoS= prompt("Introduce los minutos");
+					segundoS = prompt("Introduce los segundos");
+					
+					var hora = parseInt(horaS);
+					var minuto = parseInt(minutoS);
+					var segundo = parseInt(segundoS);
+					
+					h= hora;
+					m= minuto;
+					s= segundo;	
+				}
+				
+				function fijarAlarma(){
+
+					var horaS = "";
+					var minutoS = "";
+				
+					horaS = prompt("Introduce las horas");
+					minutoS= prompt("Introduce los minutos");
+					
+					var hora = parseInt(horaS);
+					var minuto = parseInt(minutoS);
+					
+					hA= hora;
+					mA= minuto;
+					
+					b=hA*60+mA;
+				
+				}
+				
+				function dibujarRayas(){
+					
+					ctx.save();
+					ctx.translate(300,300);
+					
+					//SEGUNDERO
+					for (var i = 0; i < 60; i++) {
+						
+						ctx.rotate(2*Math.PI/60)+i;
+						ctx.beginPath();
+						ctx.moveTo(0,-260);
+						
+						ctx.lineTo(0,-270);
+					
+						
+						ctx.stroke();
+						ctx.fill();
+					
+				
+                    }
+					//MINUTERO
+					for (var i = 0; i < 30; i++) {
+						
+						ctx.lineWidth=2;
+						ctx.rotate(5*2*Math.PI/60)+i;
+						ctx.beginPath();
+						
+						
+						ctx.moveTo(0,-255);
+						
+						ctx.lineTo(0,-270);
+						
+						ctx.stroke();
+						ctx.fill();
+					
+                    }
+					
+				
+					ctx.restore();
+				
+				}
+				
+				function relojFondo(){
+					ctx.beginPath();
+					ctx.moveTo(300+270,300);
+					ctx.arc(300,300,270,0,2*(Math.PI));
+					ctx.closePath();
+					ctx.stroke();
+				}
+				
+				function relojDigital(){
+					ctx.fillStyle="blue";
+					ctx.font = "30px Comic Sans MS";
+					
+					ctx.fillText(h +":" +m+ ":" +s , 600, 120);
+				
+				}
+				
+				function alarmaDigital(){
+					
+					ctx.fillStyle="red";
+					ctx.font = "30px Comic Sans MS";
+					
+					ctx.fillText(hA +":" +mA+ ":" +sA , 800, 120);
+				
+				}
+				
+				function botonParar(){
+					
+					//Alrededor
+					ctx.strokeStyle="black";
+					ctx.lineWidth=1;
+					ctx.clearRect(700,400,100,50);
+					ctx.strokeRect(700,400,100,50);
+					
+					//Dentro
+					ctx.fillStyle="red";
+					ctx.fillRect(700,400,100,50);
+					
+					//Texto
+					ctx.fillStyle="white";
+					ctx.textAlign="center";
+					ctx.textBaseline="middle";
+					ctx.font="bolder 25px Arial";
+					ctx.fillText("STOP",750,425,100,50)
+					
+					//Bordes
+					//BLANCOS
+					ctx.beginPath();
+					ctx.moveTo(700,20);//posicion de la linea izquierda blanca izquierda
+					ctx.lineTo(700,400);//posicion de la parte alta del blanco
+					ctx.lineTo(800,400);//ancho del blanco de arriba arriba 
+					ctx.lineTo(795,405);//ancho del blanco de arriba abajo
+					ctx.lineTo(705,405);//posicion de la linea izquierda blanca derecha arriba
+					ctx.lineTo(705,445);//ancho de la linea izquierda blanca derecha abajo
+					ctx.lineTo(700,450);//ancho de la linea izquierda blanca izquierda abajo
+					ctx.fillStyle="rgba(255,255,255,0.8)";
+					ctx.fill();
+					ctx.closePath();
+					
+					//NEGROS
+					var p=350;
+					ctx.beginPath();
+					ctx.moveTo(780,100+p);
+					ctx.lineTo(700,100+p);
+					ctx.lineTo(705,95+p);
+					ctx.lineTo(795,95+p);
+					ctx.lineTo(795,405);
+					ctx.lineTo(800,400);
+					ctx.lineTo(800,100+p);
+					ctx.fillStyle="rgba(0,0,0,0.2)";
+					ctx.fill();
+					ctx.closePath();
+				
+				}
+				
+				function botonSumar(){
+				
+					//Alrededor
+					ctx.strokeStyle="black";
+					ctx.lineWidth=1;
+					ctx.clearRect(700+xxx,400,100,50);
+					ctx.strokeRect(700+xxx,400,100,50);
+					
+					//Dentro
+					ctx.fillStyle="green";
+					ctx.fillRect(700+xxx,400,100,50);
+					
+					//Texto
+					ctx.fillStyle="white";
+					ctx.textAlign="center";
+					ctx.textBaseline="middle";
+					ctx.font="bolder 25px Arial";
+					ctx.fillText("+",750+xxx,425,100,50)
+					
+					//Bordes
+					//BLANCOS
+					ctx.beginPath();
+					ctx.moveTo(700+xxx,20);//posicion de la linea izquierda blanca izquierda
+					ctx.lineTo(700+xxx,400);//posicion de la parte alta del blanco
+					ctx.lineTo(800+xxx,400);//ancho del blanco de arriba arriba 
+					ctx.lineTo(795+xxx,405);//ancho del blanco de arriba abajo
+					ctx.lineTo(705+xxx,405);//posicion de la linea izquierda blanca derecha arriba
+					ctx.lineTo(705+xxx,445);//ancho de la linea izquierda blanca derecha abajo
+					ctx.lineTo(700+xxx,450);//ancho de la linea izquierda blanca izquierda abajo
+					ctx.fillStyle="rgba(255,255,255,0.8)";
+					ctx.fill();
+					ctx.closePath();
+					
+					//NEGROS
+					var p=350;
+					ctx.beginPath();
+					ctx.moveTo(780+xxx,100+p);
+					ctx.lineTo(700+xxx,100+p);
+					ctx.lineTo(705+xxx,95+p);
+					ctx.lineTo(795+xxx,95+p);
+					ctx.lineTo(795+xxx,405);
+					ctx.lineTo(800+xxx,400);
+					ctx.lineTo(800+xxx,100+p);
+					ctx.fillStyle="rgba(0,0,0,0.2)";
+					ctx.fill();
+					ctx.closePath();
+				
+				}
+				
+				function botonRestar(){
+				
+					//Alrededor
+					ctx.strokeStyle="black";
+					ctx.lineWidth=1;
+					ctx.clearRect(700+rrr,400,100,50);
+					ctx.strokeRect(700+rrr,400,100,50);
+					
+					//Dentro
+					ctx.fillStyle="yellow";
+					ctx.fillRect(700+rrr,400,100,50);
+					
+					//Texto
+					ctx.fillStyle="white";
+					ctx.textAlign="center";
+					ctx.textBaseline="middle";
+					ctx.font="bolder 25px Arial";
+					ctx.fillText("-",750+rrr,425,100,50)
+					
+					//Bordes
+					//BLANCOS
+					ctx.beginPath();
+					ctx.moveTo(700+rrr,20);//posicion de la linea izquierda blanca izquierda
+					ctx.lineTo(700+rrr,400);//posicion de la parte alta del blanco
+					ctx.lineTo(800+rrr,400);//ancho del blanco de arriba arriba 
+					ctx.lineTo(795+rrr,405);//ancho del blanco de arriba abajo
+					ctx.lineTo(705+rrr,405);//posicion de la linea izquierda blanca derecha arriba
+					ctx.lineTo(705+rrr,445);//ancho de la linea izquierda blanca derecha abajo
+					ctx.lineTo(700+rrr,450);//ancho de la linea izquierda blanca izquierda abajo
+					ctx.fillStyle="rgba(255,255,255,0.8)";
+					ctx.fill();
+					ctx.closePath();
+					
+					//NEGROS
+					var p=350;
+					ctx.beginPath();
+					ctx.moveTo(780+rrr,100+p);
+					ctx.lineTo(700+rrr,100+p);
+					ctx.lineTo(705+rrr,95+p);
+					ctx.lineTo(795+rrr,95+p);
+					ctx.lineTo(795+rrr,405);
+					ctx.lineTo(800+rrr,400);
+					ctx.lineTo(800+rrr,100+p);
+					ctx.fillStyle="rgba(0,0,0,0.2)";
+					ctx.fill();
+					ctx.closePath();
+				
+				}
+				
+				function botonRestablecer(){
+
+					//Alrededor
+					ctx.strokeStyle="black";
+					ctx.lineWidth=1;
+					ctx.clearRect(700,400-ccc,100,50);
+					ctx.strokeRect(700,400-ccc,100,50);
+					
+					//Dentro
+					ctx.fillStyle="blue";
+					ctx.fillRect(700,400-ccc,100,50);
+					
+					//Texto
+					ctx.fillStyle="white";
+					ctx.textAlign="center";
+					ctx.textBaseline="middle";
+					ctx.font="bolder 25px Arial";
+					ctx.fillText("UPDATE",750,425-ccc,100,50)
+					
+					//Bordes
+					//BLANCOS
+					ctx.beginPath();
+					ctx.moveTo(700,20-ccc);//posicion de la linea izquierda blanca izquierda
+					ctx.lineTo(700,400-ccc);//posicion de la parte alta del blanco
+					ctx.lineTo(800,400-ccc);//ancho del blanco de arriba arriba 
+					ctx.lineTo(795,405-ccc);//ancho del blanco de arriba abajo
+					ctx.lineTo(705,405-ccc);//posicion de la linea izquierda blanca derecha arriba
+					ctx.lineTo(705,445-ccc);//ancho de la linea izquierda blanca derecha abajo
+					ctx.lineTo(700,450-ccc);//ancho de la linea izquierda blanca izquierda abajo
+					ctx.fillStyle="rgba(255,255,255,0.8)";
+					ctx.fill();
+					ctx.closePath();
+					
+					//NEGROS
+					var p=350;
+					ctx.beginPath();
+					ctx.moveTo(780,100+p-ccc);
+					ctx.lineTo(700,100+p-ccc);
+					ctx.lineTo(705,95+p-ccc);
+					ctx.lineTo(795,95+p-ccc);
+					ctx.lineTo(795,405-ccc);
+					ctx.lineTo(800,400-ccc);
+					ctx.lineTo(800,100+p-ccc);
+					ctx.fillStyle="rgba(0,0,0,0.2)";
+					ctx.fill();
+					ctx.closePath();
+				
+				}
+				
+				function botonPararAlarma(){
+				
+					//Alrededor
+					ctx.strokeStyle="black";
+					ctx.lineWidth=1;
+					ctx.clearRect(700,400-ppp,100,50);
+					ctx.strokeRect(700,400-ppp,100,50);
+					
+					//Dentro
+					ctx.fillStyle="blue";
+					ctx.fillRect(700,400-ppp,100,50);
+					
+					//Texto
+					ctx.fillStyle="white";
+					ctx.textAlign="center";
+					ctx.textBaseline="middle";
+					ctx.font="bolder 25px Arial";
+					ctx.fillText("PARAR",750,425-ppp,100,50)
+					
+					//Bordes
+					//BLANCOS
+					ctx.beginPath();
+					ctx.moveTo(700,20-ppp);//posicion de la linea izquierda blanca izquierda
+					ctx.lineTo(700,400-ppp);//posicion de la parte alta del blanco
+					ctx.lineTo(800,400-ppp);//ancho del blanco de arriba arriba 
+					ctx.lineTo(795,405-ppp);//ancho del blanco de arriba abajo
+					ctx.lineTo(705,405-ppp);//posicion de la linea izquierda blanca derecha arriba
+					ctx.lineTo(705,445-ppp);//ancho de la linea izquierda blanca derecha abajo
+					ctx.lineTo(700,450-ppp);//ancho de la linea izquierda blanca izquierda abajo
+					ctx.fillStyle="rgba(255,255,255,0.8)";
+					ctx.fill();
+					ctx.closePath();
+					
+					//NEGROS
+					var p=350;
+					ctx.beginPath();
+					ctx.moveTo(780,100+p-ppp);
+					ctx.lineTo(700,100+p-ppp);
+					ctx.lineTo(705,95+p-ppp);
+					ctx.lineTo(795,95+p-ppp);
+					ctx.lineTo(795,405-ppp);
+					ctx.lineTo(800,400-ppp);
+					ctx.lineTo(800,100+p-ppp);
+					ctx.fillStyle="rgba(0,0,0,0.2)";
+					ctx.fill();
+					ctx.closePath();
+				}
+				
+				function botonPut(){
+				
+					//Alrededor
+					ctx.strokeStyle="black";
+					ctx.lineWidth=1;
+					ctx.clearRect(700+xxx,400-ccc,100,50);
+					ctx.strokeRect(700+xxx,400-ccc,100,50);
+					
+					//Dentro
+					ctx.fillStyle="grey";
+					ctx.fillRect(700+xxx,400-ccc,100,50);
+					
+					//Texto
+					ctx.fillStyle="white";
+					ctx.textAlign="center";
+					ctx.textBaseline="middle";
+					ctx.font="bolder 25px Arial";
+					ctx.fillText("PUT",750+xxx,425-ccc,100,50)
+					
+					//Bordes
+					//BLANCOS
+					ctx.beginPath();
+					ctx.moveTo(700+xxx,20-ccc);//posicion de la linea izquierda blanca izquierda
+					ctx.lineTo(700+xxx,400-ccc);//posicion de la parte alta del blanco
+					ctx.lineTo(800+xxx,400-ccc);//ancho del blanco de arriba arriba 
+					ctx.lineTo(795+xxx,405-ccc);//ancho del blanco de arriba abajo
+					ctx.lineTo(705+xxx,405-ccc);//posicion de la linea izquierda blanca derecha arriba
+					ctx.lineTo(705+xxx,445-ccc);//ancho de la linea izquierda blanca derecha abajo
+					ctx.lineTo(700+xxx,450-ccc);//ancho de la linea izquierda blanca izquierda abajo
+					ctx.fillStyle="rgba(255,255,255,0.8)";
+					ctx.fill();
+					ctx.closePath();
+					
+					//NEGROS
+					var p=350;
+					ctx.beginPath();
+					ctx.moveTo(780+xxx,100+p-ccc);
+					ctx.lineTo(700+xxx,100+p-ccc);
+					ctx.lineTo(705+xxx,95+p-ccc);
+					ctx.lineTo(795+xxx,95+p-ccc);
+					ctx.lineTo(795+xxx,405-ccc);
+					ctx.lineTo(800+xxx,400-ccc);
+					ctx.lineTo(800+xxx,100+p-ccc);
+					ctx.fillStyle="rgba(0,0,0,0.2)";
+					ctx.fill();
+					ctx.closePath();
+					
+				}
+				
+				
+				function botonPararPulsado(){
+					
+					//Alrededor
+					ctx.strokeStyle="black";
+					ctx.lineWidth=1;
+					ctx.clearRect(700,400,100,50);
+					ctx.strokeRect(700,400,100,50);
+					
+					//Dentro
+					ctx.fillStyle="red";
+					ctx.fillRect(700,400,100,50);
+					
+					//Texto
+					ctx.fillStyle="white";
+					ctx.textAlign="center";
+					ctx.textBaseline="middle";
+					ctx.font="bolder 25px Arial";
+					ctx.fillText("PLAY",750,425,100,50)
+					
+					//Bordes
+					//BLANCOS
+					ctx.beginPath();
+					ctx.moveTo(700,20);//posicion de la linea izquierda blanca izquierda
+					ctx.lineTo(700,400);//posicion de la parte alta del blanco
+					ctx.lineTo(800,400);//ancho del blanco de arriba arriba 
+					ctx.lineTo(795,405);//ancho del blanco de arriba abajo
+					ctx.lineTo(705,405);//posicion de la linea izquierda blanca derecha arriba
+					ctx.lineTo(705,445);//ancho de la linea izquierda blanca derecha abajo
+					ctx.lineTo(700,450);//ancho de la linea izquierda blanca izquierda abajo
+					ctx.fillStyle="rgba(0,0,0,0.2)";
+					ctx.fill();
+					ctx.closePath();
+					
+					//NEGROS
+					var p=350;
+					ctx.beginPath();
+					ctx.moveTo(780,100+p);
+					ctx.lineTo(700,100+p);
+					ctx.lineTo(705,95+p);
+					ctx.lineTo(795,95+p);
+					ctx.lineTo(795,405);
+					ctx.lineTo(800,400);
+					ctx.lineTo(800,100+p);
+					ctx.fillStyle="rgba(255,255,255,0.8)";
+					ctx.fill();
+					ctx.closePath();
+			
+				}
+		
+				function botonAlarma(){
+				
+					//Alrededor
+					ctx.strokeStyle="black";
+					ctx.lineWidth=1;
+					ctx.clearRect(700+200,400+100,100,50);
+					ctx.strokeRect(700+200,400+100,100,50);
+					
+					//Dentro
+					ctx.fillStyle="brown";
+					ctx.fillRect(700+200,400+100,100,50);
+					
+					//Texto
+					ctx.fillStyle="white";
+					ctx.textAlign="center";
+					ctx.textBaseline="middle";
+					ctx.font="bolder 25px Arial";
+					ctx.fillText("ALARMA",750+200,425+100,100,50)
+					
+					//Bordes
+					//BLANCOS
+					ctx.beginPath();
+					ctx.moveTo(700+200+100,20);//posicion de la linea izquierda blanca izquierda
+					ctx.lineTo(700+200+100,400);//posicion de la parte alta del blanco
+					ctx.lineTo(800+200+100,400);//ancho del blanco de arriba arriba 
+					ctx.lineTo(795+200+100,405);//ancho del blanco de arriba abajo
+					ctx.lineTo(705+200+100,405);//posicion de la linea izquierda blanca derecha arriba
+					ctx.lineTo(705+200+100,445);//ancho de la linea izquierda blanca derecha abajo
+					ctx.lineTo(700+200+100,450);//ancho de la linea izquierda blanca izquierda abajo
+					ctx.fillStyle="rgba(255,255,255,0.8)";
+					ctx.fill();
+					ctx.closePath();
+					
+					//NEGROS
+					var p=350;
+					ctx.beginPath();
+					ctx.moveTo(780+200+100,100+p);
+					ctx.lineTo(700+200+100,100+p);
+					ctx.lineTo(705+200+100,95+p);
+					ctx.lineTo(795+200+100,95+p);
+					ctx.lineTo(795+200+100,405);
+					ctx.lineTo(800+200+100,400);
+					ctx.lineTo(800+200+100,100+p);
+					ctx.fillStyle="rgba(0,0,0,0.2)";
+					ctx.fill();
+					ctx.closePath();
+				
+				
+				
+				
+				}
+					
+				function estaPulsado(){
+					
+						if( mouseX >=700+200 && mouseX <=800+200 && mouseY >= 400+100 && mouseY <= 450+100 ){
+							
+							if (pulsadoAlarma==true){
+								intervalo=setInterval(mover,1000);
+								pulsadoAlarma=false;
+								//alert(pulsadoAlarma);
+								
+							}else{
+								clearInterval(intervalo);
+								pulsadoAlarma=true;
+								//alert(pulsadoAlarma);
+								alarmaDigital();
+								
+							}
+							
+						}
+						
+						if( mouseX >=700 && mouseX <=800 && mouseY >= 400-ppp && mouseY <= 450-ppp ){
+							if(alarmaActivada=true){
+								alarmaActivada=false;
+								
+								ctx.clearRect(0,0,1000,600);
+								agujaS();
+								agujaM(m);
+								agujaH(h*30+m*0.5);
+								relojDigital();
+								relojFondo();
+								dibujarRayas();
+								botonParar();
+								botonSumar();
+								botonRestar();
+								botonRestablecer();
+								botonPut();
+								bolita(b);
+								botonAlarma();
+											
+								
+								
+							}
+							
+							
+						}
+						
+						if( mouseX >=700 && mouseX <=800 && mouseY >= 400 && mouseY <= 450 ){
+							
+							if (pulsadoStop==false){
+								botonPararPulsado();
+								clearInterval(intervalo);
+								parpadearColor();/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+						
+							}else{
+						
+							botonParar();
+							intervalo=setInterval(mover,1000);
+							}
+							pulsadoStop=!pulsadoStop;
+						}
+						
+						if( mouseX >=700 && mouseX <=800 && mouseY >= 400-ccc && mouseY <= 450-ccc ){
+							
+						
+								horario();
+								
+						
+						}
+						
+						if( mouseX >=700+xxx && mouseX <=800+xxx && mouseY >= 400-ccc && mouseY <= 450-ccc ){
+							
+							if (pulsadoAlarma==true){
+								fijarAlarma();
+							}else{
+						
+								fijarHora();
+							}
+						}
+						
+						
+						if( mouseX >=700+xxx && mouseX <=800+xxx && mouseY >= 400 && mouseY <= 450 ){
+							
+							if (pulsadoAlarma==true){
+								window.intervaloPlusBola=setInterval(moverBolaPLus,250);
+							}else{
+								clearInterval(intervalo);
+								intervaloPlus=setInterval(moverPlus,25);
+							
+							}
+						
+						}
+						
+						if( mouseX >=700+rrr && mouseX <=800+rrr && mouseY >= 400 && mouseY <= 450 ){
+							
+							if (pulsadoAlarma==true){
+								window.intervaloMinusBola=setInterval(moverBolaMinus,250);
+							}else{
+								clearInterval(intervalo);
+								intervaloMinus=setInterval(moverMinus,25);
+							}
+						}
+						
+						
+						
+						
+				
+				}
+				
+				
+				function noPulsado(){
+				
+					if( mouseX >=700+xxx && mouseX <=800+xxx && mouseY >= 400 && mouseY <= 450 ){
+							if(pulsadoAlarma==true){
+								
+								clearInterval(intervaloPlusBola);
+								
+							}else{
+								clearInterval(intervaloPlus);
+								intervalo=setInterval(mover,1000);
+							}	
+					}
+						
+					if( mouseX >=700+rrr && mouseX <=800+rrr && mouseY >= 400 && mouseY <= 450 ){
+						
+						if(pulsadoAlarma==true){
+								
+								clearInterval(intervaloMinusBola);
+								
+						}else{
+							window.clearInterval(intervaloMinus);
+							intervalo=setInterval(mover,1000);
+						}
+					}
+				
+				}
+				
+				function posicion(e){
+					mouseX=e.pageX-lienzo.offsetLeft;
+					mouseY=e.pageY-lienzo.offsetTop;
+					
+					
+				}
+				
+
+			</script>
+</head>
+<body>
+<h1>EXAMEN RECUPERACIÓN</h1>
+<br>
+	<canvas id="zona">
+		Su navegador no soporta la etiqueta canvas
+	</canvas>
+</body>
+</html>
